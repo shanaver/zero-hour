@@ -362,7 +362,7 @@ nav a:hover { color: var(--accent); }
 
 /* ── SECTIONS ── */
 section {
-  max-width: 1100px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 3rem 1.25rem;
 }
