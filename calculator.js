@@ -59,36 +59,127 @@ const ZeroHour = (() => {
   }
 
   /**
-   * Get Zero Hour in local minutes after midnight.
+   * Get current Zero Time hours for a given date and location.
+   * Works entirely in UTC — no timezone offset needed.
    * @param {Date} date
    * @param {number} lat - latitude
    * @param {number} lng - longitude
-   * @param {number} tzOffset - timezone offset in hours from UTC (e.g., -5 for EST)
    * @param {number} k - offset in minutes from sunrise (default 0)
    */
-  function getZeroHourLocal(date, lat, lng, tzOffset, k = 0) {
+  function getZT(date, lat, lng, k = 0) {
     const sunriseUTC = calcSunriseUTC(date, lat, lng);
     if (sunriseUTC === null) return null;
-    const zeroHourLocal = sunriseUTC + 60 * tzOffset + k;
-    return zeroHourLocal;
+    const zeroPointUTC = sunriseUTC + k;
+    const nowUTCMin = date.getUTCHours() * 60 + date.getUTCMinutes() + date.getUTCSeconds() / 60;
+    let zt = (nowUTCMin - zeroPointUTC) / 60;
+    zt = ((zt % 24) + 24) % 24;
+    return zt;
   }
 
   /**
-   * Convert civil time (minutes after midnight) to Zero Time hours.
+   * Calculate sunset UTC minutes for a given date and location.
    */
-  function civilToZT(civilMinutes, zeroHourLocal) {
-    let zt = (civilMinutes - zeroHourLocal) / 60;
-    zt = ((zt % 24) + 24) % 24; // wrap to 0-24
-    return zt;
+  function calcSunsetUTC(date, lat, lng) {
+    const N = dayOfYear(date);
+    const h = 18; // approximate hour for sunset
+    const gamma = (2 * Math.PI / 365) * (N - 1 + (h - 12) / 24);
+
+    const E = 229.18 * (
+      0.000075 +
+      0.001868 * Math.cos(gamma) -
+      0.032077 * Math.sin(gamma) -
+      0.014615 * Math.cos(2 * gamma) -
+      0.040849 * Math.sin(2 * gamma)
+    );
+
+    const delta =
+      0.006918 -
+      0.399912 * Math.cos(gamma) +
+      0.070257 * Math.sin(gamma) -
+      0.006758 * Math.cos(2 * gamma) +
+      0.000907 * Math.sin(2 * gamma) -
+      0.002697 * Math.cos(3 * gamma) +
+      0.00148 * Math.sin(3 * gamma);
+
+    const phi = lat * DEG;
+    const zenith = 90.833 * DEG;
+
+    const cosH = (Math.cos(zenith) / (Math.cos(phi) * Math.cos(delta))) -
+                 (Math.tan(phi) * Math.tan(delta));
+
+    if (cosH > 1 || cosH < -1) return null;
+
+    const H_deg = Math.acos(cosH) * RAD;
+    const sunsetUTC = 720 - 4 * (lng - H_deg) - E;
+
+    return sunsetUTC;
+  }
+
+  /**
+   * Get sunrise in local minutes after midnight (for display).
+   */
+  function getSunriseLocal(date, lat, lng) {
+    const sunriseUTC = calcSunriseUTC(date, lat, lng);
+    if (sunriseUTC === null) return null;
+    const tzOffsetMin = -date.getTimezoneOffset();
+    return sunriseUTC + tzOffsetMin;
+  }
+
+  /**
+   * Get sunset in local minutes after midnight (for display).
+   */
+  function getSunsetLocal(date, lat, lng) {
+    const sunsetUTC = calcSunsetUTC(date, lat, lng);
+    if (sunsetUTC === null) return null;
+    const tzOffsetMin = -date.getTimezoneOffset();
+    return sunsetUTC + tzOffsetMin;
+  }
+
+  /**
+   * Generate a table of local time → Zero Time for each hour of the day.
+   * @param {Date} date
+   * @param {number} lat
+   * @param {number} lng
+   * @param {number} k - offset in minutes from sunrise (default 0)
+   * @returns {Array<{localHour: number, localLabel: string, zt: number, ztLabel: string}>|null}
+   */
+  function generateDayTable(date, lat, lng, k = 0) {
+    const sunriseUTC = calcSunriseUTC(date, lat, lng);
+    if (sunriseUTC === null) return null;
+    const zeroPointUTC = sunriseUTC + k;
+    const tzOffsetMin = -date.getTimezoneOffset(); // browser's UTC offset in minutes
+
+    const rows = [];
+    for (let h = 0; h < 24; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const localMin = h * 60 + m;
+        const utcMin = localMin - tzOffsetMin;
+        let zt = (utcMin - zeroPointUTC) / 60;
+        zt = ((zt % 24) + 24) % 24;
+        rows.push({
+          localHour: h,
+          localMin: m,
+          localLabel: formatCivil(localMin),
+          zt,
+          ztLabel: formatZT(zt),
+        });
+      }
+    }
+    return rows;
   }
 
   /**
    * Format ZT hours as ZT HH:MM
    */
-  function formatZT(ztHours) {
+  function formatZT(ztHours, withSeconds = false) {
     const h = Math.floor(ztHours);
-    const m = Math.floor((ztHours - h) * 60);
-    return `ZT ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    const remainder = (ztHours - h) * 60;
+    const m = Math.floor(remainder);
+    const s = Math.floor((remainder - m) * 60);
+    if (withSeconds) {
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `ZHT ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
   /**
@@ -103,99 +194,108 @@ const ZeroHour = (() => {
     return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
   }
 
-  return { calcSunriseUTC, getZeroHourLocal, civilToZT, formatZT, formatCivil, dayOfYear };
+  return { calcSunriseUTC, calcSunsetUTC, getZT, getSunriseLocal, getSunsetLocal, generateDayTable, formatZT, formatCivil, dayOfYear };
 })();
 
 
 // ── UI Controller ──
 
 document.addEventListener('DOMContentLoaded', () => {
-  const ztBig = document.getElementById('zt-big');
-  const ztLabel = document.getElementById('zt-label');
-  const civilTimeEl = document.getElementById('civil-time');
-  const sunriseInfoEl = document.getElementById('sunrise-info');
-  const latInput = document.getElementById('calc-lat');
-  const lngInput = document.getElementById('calc-lng');
-  const offsetInput = document.getElementById('calc-offset');
-  const kInput = document.getElementById('calc-k');
-  const geoBtn = document.getElementById('geo-btn');
+  const heroZt = document.getElementById('hero-zt');
+  const heroCivil = document.getElementById('hero-civil');
+  const heroZtSun = document.getElementById('hero-zt-sun');
+  const heroCivilSun = document.getElementById('hero-civil-sun');
   const navZt = document.getElementById('nav-zt');
 
-  let currentLat = 40.7128;
-  let currentLng = -74.006;
-  let currentTz = -new Date().getTimezoneOffset() / 60;
-  let currentK = 0;
+  let currentLat = null;
+  let currentLng = null;
+
+  function format24(date) {
+    return String(date.getHours()).padStart(2, '0') + ':' +
+           String(date.getMinutes()).padStart(2, '0') + ':' +
+           String(date.getSeconds()).padStart(2, '0');
+  }
 
   function update() {
     const now = new Date();
-    const lat = parseFloat(latInput.value) || currentLat;
-    const lng = parseFloat(lngInput.value) || currentLng;
-    const tz = parseFloat(offsetInput.value);
-    const k = parseFloat(kInput.value) || 0;
 
-    currentLat = lat;
-    currentLng = lng;
-    currentTz = tz;
-    currentK = k;
+    // Always update local 24h clock in hero
+    heroCivil.textContent = format24(now);
 
-    const zeroHourLocal = ZeroHour.getZeroHourLocal(now, lat, lng, tz, k);
+    const lat = currentLat;
+    const lng = currentLng;
 
-    if (zeroHourLocal === null) {
-      ztBig.textContent = 'ZT --:--';
-      ztLabel.textContent = 'No sunrise at this latitude today';
-      civilTimeEl.textContent = '';
-      sunriseInfoEl.textContent = '';
-      navZt.textContent = 'ZT --:--';
+    if (lat === null || lng === null) {
+      heroZt.textContent = 'ZHT --:--';
+      heroZtSun.textContent = 'Detecting location...';
+      heroCivilSun.textContent = '';
+      if (navZt) navZt.textContent = 'ZHT --:--';
       return;
     }
 
-    const civilMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
-    const ztHours = ZeroHour.civilToZT(civilMinutes, zeroHourLocal);
-    const ztFormatted = ZeroHour.formatZT(ztHours);
-    const sunriseFormatted = ZeroHour.formatCivil(zeroHourLocal);
-    const civilFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const ztHours = ZeroHour.getZT(now, lat, lng, 0);
 
-    ztBig.textContent = ztFormatted;
-    ztLabel.textContent = 'Current Zero Time';
-    civilTimeEl.textContent = `Civil time: ${civilFormatted}`;
-    sunriseInfoEl.textContent = `Today's sunrise: ${sunriseFormatted} | Zero Hour: ${ZeroHour.formatCivil(zeroHourLocal)}`;
-    navZt.textContent = ztFormatted;
+    if (ztHours === null) {
+      heroZt.textContent = 'ZHT --:--';
+      heroZtSun.textContent = 'No sunrise at this latitude today';
+      heroCivilSun.textContent = '';
+      if (navZt) navZt.textContent = 'ZHT --:--';
+      return;
+    }
+
+    const ztFormatted = ZeroHour.formatZT(ztHours);
+    const sunriseLocal = ZeroHour.getSunriseLocal(now, lat, lng);
+    const sunsetLocal = ZeroHour.getSunsetLocal(now, lat, lng);
+    const sunriseFormatted = ZeroHour.formatCivil(sunriseLocal);
+    const sunsetFormatted = sunsetLocal !== null ? ZeroHour.formatCivil(sunsetLocal) : '--';
+
+    // Compute sunset in ZT
+    const sunsetZTHours = sunsetLocal !== null ? (sunsetLocal - sunriseLocal) / 60 : null;
+    const sunsetZTFormatted = sunsetZTHours !== null ? ZeroHour.formatZT(((sunsetZTHours % 24) + 24) % 24) : '--';
+
+    // Hero clocks
+    heroZt.textContent = ZeroHour.formatZT(ztHours, true);
+    heroZtSun.textContent = `Sunrise: ZHT 00:00 · Sunset: ${sunsetZTFormatted}`;
+    heroCivilSun.textContent = `Sunrise: ${sunriseFormatted} · Sunset: ${sunsetFormatted}`;
+
+    // Show timezone abbreviation
+    const tzLabel = document.getElementById('hero-tz-label');
+    if (tzLabel) {
+      const tzAbbr = now.toLocaleTimeString([], { timeZoneName: 'short' }).split(' ').pop();
+      tzLabel.textContent = `Current GMT System (${tzAbbr})`;
+    }
+
+    if (navZt) navZt.textContent = ztFormatted;
+
+    // Update the day/night map
+    if (typeof DayNightMap !== 'undefined') DayNightMap.render();
   }
 
-  // Geolocation
-  geoBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation not supported by your browser.');
-      return;
-    }
-    geoBtn.textContent = 'Locating...';
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        latInput.value = pos.coords.latitude.toFixed(4);
-        lngInput.value = pos.coords.longitude.toFixed(4);
-        offsetInput.value = -new Date().getTimezoneOffset() / 60;
-        geoBtn.textContent = 'Use My Location';
-        update();
-      },
-      () => {
-        geoBtn.textContent = 'Use My Location';
-        alert('Could not get your location.');
-      }
-    );
-  });
+  // Init day/night map
+  const mapCanvas = document.getElementById('daynight-canvas');
+  if (mapCanvas && typeof DayNightMap !== 'undefined') {
+    DayNightMap.init(mapCanvas);
+  }
 
-  // Set defaults
-  offsetInput.value = currentTz;
-  latInput.value = currentLat;
-  lngInput.value = currentLng;
-  kInput.value = 0;
+  function setLocation(lat, lng) {
+    currentLat = lat;
+    currentLng = lng;
+    if (typeof DayNightMap !== 'undefined') DayNightMap.setUserLocation(lat, lng);
+    update();
+  }
+
+  function requestGeo() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setLocation(pos.coords.latitude, pos.coords.longitude),
+      () => setLocation(40.7128, -74.006) // Fallback to NYC
+    );
+  }
+
+  // Auto-detect location on load
+  requestGeo();
 
   // Live update every second
   update();
   setInterval(update, 1000);
-
-  // Update on input change
-  [latInput, lngInput, offsetInput, kInput].forEach(el => {
-    el.addEventListener('input', update);
-  });
 });

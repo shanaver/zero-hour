@@ -17,25 +17,52 @@
   <div class="nav-inner">
     <a href="#" class="logo"><span>Zero</span>Hour</a>
     <ul>
+      <li><a href="#world-map">Map</a></li>
       <li><a href="#concept">Concept</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#calculator">Calculator</a></li>
       <li><a href="#vs-dst">vs DST</a></li>
-      <li><a href="#design">Design Choices</a></li>
     </ul>
-    <div class="live-zt" id="nav-zt">ZT --:--</div>
+    <div class="live-zt" id="nav-zt">ZHT --:--</div>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="top">
   <div class="hero-content">
-    <h1><span class="highlight">Zero Hour</span></h1>
-    <p class="tagline">A sunrise-anchored parallel time system — where the day begins when the Sun comes up.</p>
-    <div class="cta-row">
-      <a href="#calculator" class="btn btn-primary">Try the Calculator</a>
-      <a href="#concept" class="btn btn-secondary">Read the Proposal</a>
+    <h1><span class="highlight">The Zero Hour Proposal</span></h1>
+
+    <div class="hero-pitch">
+      <div class="pitch-questions">
+        <p>What if you could wake up without an alarm clock every day of the year?</p>
+        <p class="pitch-imagine-inline">Imagine how much more refreshed you would be at work or school.</p>
+        <p>What if work or school started exactly 2 hours after the sun came up every day of the year?</p>
+        <p class="pitch-imagine-inline">Imagine how much less stressful the mornings would be.</p>
+      </div>
+      <div class="pitch-cta">Zero Hour is the solution.</div>
     </div>
+
+    <div class="hero-clocks">
+      <div class="hero-clock-zt">
+        <div class="hero-clock-label">Current Zero Hour Time</div>
+        <div class="hero-time" id="hero-zt">--:--:--</div>
+        <div class="hero-sun-info" id="hero-zt-sun">Sunrise: -- &middot; Sunset: --</div>
+      </div>
+      <div class="hero-clock-divider"></div>
+      <div class="hero-clock-civil">
+        <div class="hero-clock-label" id="hero-tz-label">Current GMT System</div>
+        <div class="hero-time hero-time-civil" id="hero-civil">--:--:--</div>
+        <div class="hero-sun-info" id="hero-civil-sun">Sunrise: -- &middot; Sunset: --</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DAY/NIGHT MAP -->
+<section id="world-map" class="map-section">
+  <h2 class="map-heading">Current <span class="accent">Zero Hour</span> Map</h2>
+  <div class="city-pills" id="city-pills"></div>
+  <div class="map-container">
+    <canvas id="daynight-canvas"></canvas>
   </div>
 </section>
 
@@ -44,13 +71,13 @@
 <!-- CONCEPT -->
 <section id="concept">
   <h2>The <span class="accent">Concept</span></h2>
-  <p class="section-subtitle">For most people and most animals, the felt beginning of the day happens around sunrise, not in the middle of the night.</p>
+  <p class="section-subtitle">Most of the animals on Planet Earth sleep at night and wake up naturally at dawn. Human society has been forcing a different system on itself and it's not natural, healthy, or necessary.</p>
 
   <div class="concept-grid">
     <div class="concept-card">
       <span class="icon">&#9728;</span>
       <h3>Sunrise-Aligned</h3>
-      <p>Zero Hour tracks the natural day. When the Sun comes up, the parallel clock starts. ZT 0 is dawn-adjacent, making the named start of the day match visible daylight.</p>
+      <p>Zero Hour tracks the natural day. When the Sun comes up, the parallel clock starts. ZHT 0 is dawn-adjacent, making the named start of the day match visible daylight.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#8644;</span>
@@ -65,7 +92,7 @@
     <div class="concept-card">
       <span class="icon">&#128197;</span>
       <h3>Natural Scheduling</h3>
-      <p>Daily life can be expressed in Zero Time. "School starts at ZT 1.5" means one and a half hours after sunrise. Shops open at ZT 2. Intuitive and universal.</p>
+      <p>Daily life can be expressed in Zero Time. "School starts at ZHT 1.5" means one and a half hours after sunrise. Shops open at ZHT 2. Intuitive and universal.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#128187;</span>
@@ -95,67 +122,27 @@
 
   <div class="formula-block">
     <h3>Solar Calculation</h3>
-    <code>gamma = (2&pi;/365) &times; (N - 1 + (h - 12)/24)
+    <code>&gamma; = (2&pi; / 365) &times; (N &minus; 1 + (h &minus; 12) / 24)
 
-E = 229.18 &times; (0.000075 + 0.001868&middot;cos(&gamma;) - 0.032077&middot;sin(&gamma;)
-     - 0.014615&middot;cos(2&gamma;) - 0.040849&middot;sin(2&gamma;))
+E = 229.18 &times; (0.000075 + 0.001868&middot;cos &gamma; &minus; 0.032077&middot;sin &gamma;
+     &minus; 0.014615&middot;cos 2&gamma; &minus; 0.040849&middot;sin 2&gamma;)
 
-&delta; = 0.006918 - 0.399912&middot;cos(&gamma;) + 0.070257&middot;sin(&gamma;)
-    - 0.006758&middot;cos(2&gamma;) + 0.000907&middot;sin(2&gamma;)
-    - 0.002697&middot;cos(3&gamma;) + 0.00148&middot;sin(3&gamma;)
+&delta; = 0.006918 &minus; 0.399912&middot;cos &gamma; + 0.070257&middot;sin &gamma;
+    &minus; 0.006758&middot;cos 2&gamma; + 0.000907&middot;sin 2&gamma;
+    &minus; 0.002697&middot;cos 3&gamma; + 0.00148&middot;sin 3&gamma;
 
-H = arccos(cos(90.833&deg;) / (cos(&phi;)&middot;cos(&delta;)) - tan(&phi;)&middot;tan(&delta;))
+cos H = cos(90.833&deg;) / (cos &phi; &middot; cos &delta;) &minus; tan &phi; &middot; tan &delta;
 
-Sunrise (UTC min) = 720 - 4&times;(&lambda; + H&deg;) - E</code>
-    <p>N = day of year, &phi; = latitude in radians, &lambda; = longitude in degrees east. This is the standard NOAA-style solar position model.</p>
+Sunrise (UTC min) = 720 &minus; 4 &times; (&lambda; + H) &minus; E</code>
+    <p>N = day of year, h = approximate sunrise hour (6), &phi; = latitude, &delta; = solar declination, &lambda; = longitude (degrees east), E = equation of time (minutes), H = hour angle (degrees). This is the standard NOAA solar position model.</p>
   </div>
 
   <div class="formula-block">
-    <h3>Converting Civil Time to Zero Time</h3>
-    <code>ZT(t) = (t - ZeroHourLocal) / 60
+    <h3>Converting Civil Time to Zero Hour Time</h3>
+    <code>ZHT(t) = (t &minus; ZeroHourLocal) / 60
 
-ZT_24(t) = ((t - ZeroHourLocal) / 60) mod 24</code>
-    <p>Where t is local civil time measured in minutes after midnight. The result is hours in Zero Time.</p>
-  </div>
-</section>
-
-<div class="sunrise-divider"></div>
-
-<!-- CALCULATOR -->
-<section id="calculator">
-  <h2>Zero Time <span class="accent">Calculator</span></h2>
-  <p class="section-subtitle">See the current Zero Time for your location, live. Uses the solar equations from the proposal.</p>
-
-  <div class="calculator-wrapper">
-    <div class="calc-display">
-      <div class="zt-big" id="zt-big">ZT --:--</div>
-      <div class="zt-label" id="zt-label">Calculating...</div>
-      <div class="civil-time" id="civil-time"></div>
-      <div class="sunrise-info" id="sunrise-info"></div>
-    </div>
-
-    <div class="calc-inputs">
-      <div class="calc-field">
-        <label>Latitude</label>
-        <input type="number" id="calc-lat" step="0.0001" placeholder="40.7128">
-      </div>
-      <div class="calc-field">
-        <label>Longitude</label>
-        <input type="number" id="calc-lng" step="0.0001" placeholder="-74.0060">
-      </div>
-      <div class="calc-field">
-        <label>UTC Offset (hours)</label>
-        <input type="number" id="calc-offset" step="0.5" placeholder="-5">
-      </div>
-      <div class="calc-field">
-        <label>Dawn Offset k (min)</label>
-        <input type="number" id="calc-k" step="1" value="0" placeholder="0">
-      </div>
-    </div>
-
-    <div class="calc-actions">
-      <button class="btn btn-primary" id="geo-btn">Use My Location</button>
-    </div>
+ZHT₂₄(t) = ((t &minus; ZeroHourLocal) / 60) mod 24</code>
+    <p>Where t is current UTC time in minutes after midnight and ZeroHourLocal is sunrise UTC minutes + offset k. The result is hours in Zero Hour Time.</p>
   </div>
 </section>
 
@@ -190,66 +177,16 @@ ZT_24(t) = ((t - ZeroHourLocal) / 60) mod 24</code>
   </div>
 </section>
 
-<div class="sunrise-divider"></div>
-
-<!-- DESIGN CHOICES -->
-<section id="design">
-  <h2>Design <span class="accent">Choices</span></h2>
-  <p class="section-subtitle">Multiple implementation modes for different use cases.</p>
-
-  <div class="concept-grid">
-    <div class="concept-card">
-      <h3>Exact Sunrise Mode</h3>
-      <p>Zero Hour equals sunrise exactly. Elegant and pure, but sensitive to atmospheric and astronomical details.</p>
-    </div>
-    <div class="concept-card">
-      <h3>Sunrise + Offset Mode</h3>
-      <p>Add a fixed offset k after sunrise. More practical and stable for social scheduling while remaining sunrise-anchored.</p>
-    </div>
-    <div class="concept-card">
-      <h3>Regional Normalization</h3>
-      <p>Same formula everywhere, but round to the nearest 5 or 10 minutes for readability and shared regional consistency.</p>
-    </div>
-    <div class="concept-card">
-      <h3>Dual-Display Mode</h3>
-      <p>Phones, calendars, watches, and public signs show both civil time and Zero Time side by side.</p>
-    </div>
-  </div>
-</section>
-
-<div class="sunrise-divider"></div>
-
-<!-- EDGE CASES -->
-<section id="edge-cases">
-  <h2>Limitations &amp; <span class="accent">Edge Cases</span></h2>
-
-  <div class="edge-cases">
-    <div class="edge-card">
-      <h4>Extreme Latitudes</h4>
-      <p>Very high latitudes have dates with no sunrise or no sunset. Zero Hour would need a fallback rule for polar regions.</p>
-    </div>
-    <div class="edge-card">
-      <h4>Cloud Cover</h4>
-      <p>Cloud cover doesn't change the mathematical sunrise, but lived experience may differ from the calculated day start.</p>
-    </div>
-    <div class="edge-card">
-      <h4>Software Standards</h4>
-      <p>Operational use would require standard rules for time zones, leap years, and rounding behavior across implementations.</p>
-    </div>
-    <div class="edge-card">
-      <h4>Night Workers</h4>
-      <p>People who work nights may still prefer ordinary civil time as their primary frame of reference.</p>
-    </div>
-  </div>
-</section>
-
 <!-- BOTTOM LINE -->
 <section id="bottom-line">
   <div class="formula-block" style="text-align: center; border-color: rgba(245, 158, 11, 0.3);">
     <h3>The Bottom Line</h3>
-    <p style="font-size: 1.05rem; color: var(--text); max-width: 700px; margin: 0 auto; line-height: 1.8;">
-      Zero Hour is mathematically feasible as a companion clock. The strongest version of the idea is not "move time a few seconds every day by hand," but <strong>"define a second public time scale whose zero point is a smooth function of date, latitude, longitude, and a chosen dawn offset."</strong> That preserves the precision of modern timekeeping while reintroducing a more natural sense of when the day begins.
-    </p>
+    <div class="bottom-line-items">
+      <p>Zero Hour is mathematically feasible as a companion clock.</p>
+      <p>Zero Hour fixes the problem of waking up in the dark in the winter and needing alarm clocks.</p>
+      <p>Zero Hour preserves the precision of modern timekeeping while reintroducing a more natural sense of when the day begins.</p>
+      <p>Wake up naturally with the sun — not artificially with an alarm.</p>
+    </div>
   </div>
 </section>
 
@@ -257,6 +194,7 @@ ZT_24(t) = ((t - ZeroHourLocal) / 60) mod 24</code>
   <p>Zero Hour Proposal &copy; 2026. A sunrise-anchored parallel time system.</p>
 </footer>
 
+<script src="daynight-map.js"></script>
 <script src="calculator.js"></script>
 </body>
 </html>
