@@ -301,16 +301,7 @@ const DayNightMap = (() => {
       const nameTd = document.createElement('td');
       nameTd.dataset.cityIndex = i;
       const displayName = city.isUser ? (typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name) : city.name;
-      if (city.isUser) {
-        nameTd.textContent = displayName;
-      } else {
-        const link = document.createElement('a');
-        link.href = `https://www.google.com/maps/@${city.lat},${city.lng},10z`;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = displayName;
-        nameTd.appendChild(link);
-      }
+      nameTd.textContent = displayName;
       nameTd.style.cursor = 'pointer';
       nameTd.addEventListener('click', () => setActiveCity(i));
       nameRow.appendChild(nameTd);
@@ -375,17 +366,6 @@ const DayNightMap = (() => {
         zhtCells[i].textContent = 'ZHT --:--';
       }
 
-      // Update "My Location" link if coords are now available
-      if (city.isUser && cLat !== null && cLng !== null && !nameCells[i].querySelector('a')) {
-        const displayName = typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name;
-        nameCells[i].textContent = '';
-        const link = document.createElement('a');
-        link.href = `https://www.google.com/maps/@${cLat},${cLng},10z`;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = displayName;
-        nameCells[i].appendChild(link);
-      }
     });
   }
 

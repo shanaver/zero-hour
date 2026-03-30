@@ -535,15 +535,14 @@ section .section-subtitle {
   padding-top: 0.5rem;
 }
 
-.city-table .city-name-row a {
+.city-table .city-name-row td {
   color: var(--text);
-  text-decoration: none;
+  cursor: pointer;
   transition: color 0.2s;
 }
 
-.city-table .city-name-row a:hover {
+.city-table .city-name-row td:hover {
   color: var(--accent);
-  text-decoration: underline;
 }
 
 /* Row: civil time */
@@ -584,7 +583,7 @@ section .section-subtitle {
   background: rgba(245, 158, 11, 0.18) !important;
 }
 
-.city-table .city-name-row td.city-active a {
+.city-table .city-name-row td.city-active {
   color: var(--accent);
 }
 
