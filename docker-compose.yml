@@ -1,0 +1,12 @@
+name: shanaver-zero-hour
+
+services:
+  web_dev:
+    container_name: shanaver_zero_hour_dev
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro
+    profiles:
+      - dev
