@@ -1,6 +1,6 @@
 # Zero Hour
 
-A sunrise-anchored parallel time system. Live at [zerohour.shanaver.com](https://zerohour.shanaver.com) (deployed via Netlify).
+A sunrise-anchored parallel time system. Live at [shanaver-zerohour.netlify.app](https://shanaver-zerohour.netlify.app/) (deployed via Netlify).
 
 ## What Is Zero Hour?
 

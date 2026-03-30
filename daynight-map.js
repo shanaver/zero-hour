@@ -91,11 +91,15 @@ const DayNightMap = (() => {
   // City markers for pills
   // Ordered west to east by longitude
   const CITIES = [
-    { name: 'Reykjavik', lat: 64.1466, lng: -21.9426 },
+    { name: 'Honolulu', lat: 21.3069, lng: -157.8583 },
+    { name: 'Anchorage', lat: 61.2181, lng: -149.9003 },
     { name: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
+    { name: 'Denver', lat: 39.7392, lng: -104.9903 },
+    { name: 'Chicago', lat: 41.8781, lng: -87.6298 },
     { name: 'New York', lat: 40.7128, lng: -74.006 },
     { name: 'Ushuaia', lat: -54.8019, lng: -68.3030 },
     { name: 'S\u00E3o Paulo', lat: -23.5505, lng: -46.6333 },
+    { name: 'Reykjavik', lat: 64.1466, lng: -21.9426 },
     { name: 'Lisbon', lat: 38.7223, lng: -9.1393 },
     { name: 'Madrid', lat: 40.4168, lng: -3.7038 },
     { name: 'London', lat: 51.5074, lng: -0.1278 },
@@ -114,13 +118,14 @@ const DayNightMap = (() => {
     { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
   ];
 
-  let activeCity = 9; // index into CITIES, 9 = My Location
+  let activeCity = CITIES.findIndex(c => c.isUser); // My Location
 
   function init(canvasEl) {
     canvas = canvasEl;
     ctx = canvas.getContext('2d');
     resize();
     buildCityTable();
+    scrollToActiveCity();
     window.addEventListener('resize', () => { resize(); render(); });
     if (typeof I18n !== 'undefined') {
       I18n.onLanguageChange(() => buildCityTable());
@@ -193,11 +198,13 @@ const DayNightMap = (() => {
     userLng = lng;
     const userCity = CITIES.find(c => c.isUser);
     if (userCity) { userCity.lat = lat; userCity.lng = lng; }
+    scrollToActiveCity();
   }
 
   function setActiveCity(index) {
     activeCity = index;
     updateCityTable();
+    scrollToActiveCity();
     render();
   }
 
@@ -339,6 +346,25 @@ const DayNightMap = (() => {
         nameCells[i].appendChild(link);
       }
     });
+  }
+
+  /**
+   * Scroll the table wrapper so the active city column is centered horizontally.
+   */
+  function scrollToActiveCity() {
+    const wrap = document.getElementById('city-table-wrap');
+    const table = document.getElementById('city-table');
+    if (!wrap || !table) return;
+
+    const rows = table.querySelectorAll('tr');
+    if (rows.length < 1) return;
+    const cells = rows[0].querySelectorAll('td');
+    if (!cells[activeCity]) return;
+
+    const cell = cells[activeCity];
+    const cellCenter = cell.offsetLeft + cell.offsetWidth / 2;
+    const wrapCenter = wrap.clientWidth / 2;
+    wrap.scrollLeft = cellCenter - wrapCenter;
   }
 
   /**
