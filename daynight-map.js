@@ -93,19 +93,26 @@ const DayNightMap = (() => {
   const CITIES = [
     { name: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
     { name: 'New York', lat: 40.7128, lng: -74.006 },
-    { name: 'São Paulo', lat: -23.5505, lng: -46.6333 },
+    { name: 'S\u00E3o Paulo', lat: -23.5505, lng: -46.6333 },
+    { name: 'Lisbon', lat: 38.7223, lng: -9.1393 },
+    { name: 'Madrid', lat: 40.4168, lng: -3.7038 },
     { name: 'London', lat: 51.5074, lng: -0.1278 },
     { name: 'Paris', lat: 48.8566, lng: 2.3522 },
     { name: 'My Location', lat: null, lng: null, isUser: true },
+    { name: 'Berlin', lat: 52.52, lng: 13.405 },
+    { name: 'Rome', lat: 41.9028, lng: 12.4964 },
     { name: 'Cairo', lat: 30.0444, lng: 31.2357 },
     { name: 'Nairobi', lat: -1.2921, lng: 36.8219 },
+    { name: 'Kyiv', lat: 50.4504, lng: 30.5234 },
     { name: 'Dubai', lat: 25.2048, lng: 55.2708 },
-    { name: 'Mumbai', lat: 19.076, lng: 72.8777 },
+    { name: 'New Delhi', lat: 28.6139, lng: 77.209 },
+    { name: 'Beijing', lat: 39.9042, lng: 116.4074 },
+    { name: 'Seoul', lat: 37.5665, lng: 126.978 },
     { name: 'Tokyo', lat: 35.6762, lng: 139.6503 },
     { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
   ];
 
-  let activeCity = 5; // index into CITIES, 5 = My Location
+  let activeCity = 7; // index into CITIES, 7 = My Location
 
   function init(canvasEl) {
     canvas = canvasEl;
