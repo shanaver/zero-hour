@@ -91,8 +91,10 @@ const DayNightMap = (() => {
   // City markers for pills
   // Ordered west to east by longitude
   const CITIES = [
+    { name: 'Reykjavik', lat: 64.1466, lng: -21.9426 },
     { name: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
     { name: 'New York', lat: 40.7128, lng: -74.006 },
+    { name: 'Ushuaia', lat: -54.8019, lng: -68.3030 },
     { name: 'S\u00E3o Paulo', lat: -23.5505, lng: -46.6333 },
     { name: 'Lisbon', lat: 38.7223, lng: -9.1393 },
     { name: 'Madrid', lat: 40.4168, lng: -3.7038 },
@@ -112,7 +114,7 @@ const DayNightMap = (() => {
     { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
   ];
 
-  let activeCity = 7; // index into CITIES, 7 = My Location
+  let activeCity = 9; // index into CITIES, 9 = My Location
 
   function init(canvasEl) {
     canvas = canvasEl;
