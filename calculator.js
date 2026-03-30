@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (lat === null || lng === null) {
       heroZt.textContent = 'ZHT --:--';
-      heroZtSun.textContent = 'Detecting location...';
+      heroZtSun.textContent = I18n.t('detecting');
       heroCivilSun.textContent = '';
       if (navZt) navZt.textContent = 'ZHT --:--';
       return;
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (ztHours === null) {
       heroZt.textContent = 'ZHT --:--';
-      heroZtSun.textContent = 'No sunrise at this latitude today';
+      heroZtSun.textContent = I18n.t('no_sunrise');
       heroCivilSun.textContent = '';
       if (navZt) navZt.textContent = 'ZHT --:--';
       return;
@@ -255,14 +255,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hero clocks
     heroZt.textContent = ZeroHour.formatZT(ztHours, true);
-    heroZtSun.textContent = `Sunrise: ZHT 00:00 · Sunset: ${sunsetZTFormatted}`;
-    heroCivilSun.textContent = `Sunrise: ${sunriseFormatted} · Sunset: ${sunsetFormatted}`;
+    heroZtSun.textContent = `${I18n.t('sunrise')}: ZHT 00:00 \u00B7 ${I18n.t('sunset')}: ${sunsetZTFormatted}`;
+    heroCivilSun.textContent = `${I18n.t('sunrise')}: ${sunriseFormatted} \u00B7 ${I18n.t('sunset')}: ${sunsetFormatted}`;
 
     // Show timezone abbreviation
     const tzLabel = document.getElementById('hero-tz-label');
     if (tzLabel) {
       const tzAbbr = now.toLocaleTimeString([], { timeZoneName: 'short' }).split(' ').pop();
-      tzLabel.textContent = `Current GMT System (${tzAbbr})`;
+      tzLabel.textContent = `${I18n.t('hero_civil_label')} (${tzAbbr})`;
     }
 
     if (navZt) navZt.textContent = ztFormatted;

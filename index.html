@@ -17,10 +17,10 @@
   <div class="nav-inner">
     <a href="#" class="logo"><span>Zero</span>Hour</a>
     <ul>
-      <li><a href="#world-map">Map</a></li>
-      <li><a href="#concept">Concept</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#vs-dst">vs DST</a></li>
+      <li><a href="#world-map" data-i18n="nav_map">Global Map</a></li>
+      <li><a href="#concept" data-i18n="nav_concept">Concept</a></li>
+      <li><a href="#vs-dst" data-i18n="nav_dst">vs DST</a></li>
+      <li><a href="#how-it-works" data-i18n="nav_how">How It Works</a></li>
     </ul>
     <div class="live-zt" id="nav-zt">ZHT --:--</div>
   </div>
@@ -29,27 +29,27 @@
 <!-- HERO -->
 <section class="hero" id="top">
   <div class="hero-content">
-    <h1><span class="highlight">The Zero Hour Proposal</span></h1>
+    <h1><span class="highlight" data-i18n="hero_title">The Zero Hour Proposal</span></h1>
 
     <div class="hero-pitch">
       <div class="pitch-questions">
-        <p>What if you could wake up without an alarm clock every day of the year?</p>
-        <p class="pitch-imagine-inline">Imagine how much more refreshed you would be at work or school.</p>
-        <p>What if work or school started exactly 2 hours after the sun came up every day of the year?</p>
-        <p class="pitch-imagine-inline">Imagine how much less stressful the mornings would be.</p>
+        <p data-i18n="hero_q1">What if you could wake up without an alarm clock every day of the year?</p>
+        <p class="pitch-imagine-inline" data-i18n="hero_imagine1">Imagine how much more refreshed you would be at work or school.</p>
+        <p data-i18n="hero_q2">What if work or school started exactly 2 hours after the sun came up every day of the year?</p>
+        <p class="pitch-imagine-inline" data-i18n="hero_imagine2">Imagine how much less stressful the mornings would be.</p>
       </div>
-      <div class="pitch-cta">Zero Hour is the solution.</div>
+      <div class="pitch-cta" data-i18n="hero_cta">Zero Hour is the solution.</div>
     </div>
 
     <div class="hero-clocks">
       <div class="hero-clock-zt">
-        <div class="hero-clock-label">Current Zero Hour Time</div>
+        <div class="hero-clock-label" data-i18n="hero_zht_label">Current Zero Hour Time</div>
         <div class="hero-time" id="hero-zt">--:--:--</div>
         <div class="hero-sun-info" id="hero-zt-sun">Sunrise: -- &middot; Sunset: --</div>
       </div>
       <div class="hero-clock-divider"></div>
       <div class="hero-clock-civil">
-        <div class="hero-clock-label" id="hero-tz-label">Current GMT System</div>
+        <div class="hero-clock-label" id="hero-tz-label" data-i18n="hero_civil_label">Current GMT System</div>
         <div class="hero-time hero-time-civil" id="hero-civil">--:--:--</div>
         <div class="hero-sun-info" id="hero-civil-sun">Sunrise: -- &middot; Sunset: --</div>
       </div>
@@ -59,7 +59,7 @@
 
 <!-- DAY/NIGHT MAP -->
 <section id="world-map" class="map-section">
-  <h2 class="map-heading">Current <span class="accent">Zero Hour</span> Map</h2>
+  <h2 class="map-heading" data-i18n-html="map_heading">Current <span class="accent">Zero Hour</span> Map</h2>
   <div class="city-pills" id="city-pills"></div>
   <div class="map-container">
     <canvas id="daynight-canvas"></canvas>
@@ -70,39 +70,70 @@
 
 <!-- CONCEPT -->
 <section id="concept">
-  <h2>The <span class="accent">Concept</span></h2>
-  <p class="section-subtitle">Most of the animals on Planet Earth sleep at night and wake up naturally at dawn. Human society has been forcing a different system on itself and it's not natural, healthy, or necessary.</p>
+  <h2 data-i18n-html="concept_heading">The <span class="accent">Concept</span></h2>
+  <p class="section-subtitle" data-i18n="concept_subtitle">Most of the animals on Planet Earth sleep at night and wake up naturally at dawn. Human society has been forcing a different system on itself and it's not natural, healthy, or necessary.</p>
 
   <div class="concept-grid">
     <div class="concept-card">
       <span class="icon">&#9728;</span>
-      <h3>Sunrise-Aligned</h3>
-      <p>Zero Hour tracks the natural day. When the Sun comes up, the parallel clock starts. ZHT 0 is dawn-adjacent, making the named start of the day match visible daylight.</p>
+      <h3 data-i18n="concept_sunrise_title">Sunrise-Aligned</h3>
+      <p data-i18n="concept_sunrise_desc">Zero Hour tracks the natural day. When the Sun comes up, the parallel clock starts. ZHT 0 is dawn-adjacent, making the named start of the day match visible daylight.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#8644;</span>
-      <h3>Parallel System</h3>
-      <p>Ordinary clock time remains unchanged for transport, software, law, aviation, and finance. Zero Hour exists alongside it as a human-centered schedule layer.</p>
+      <h3 data-i18n="concept_parallel_title">Parallel System</h3>
+      <p data-i18n="concept_parallel_desc">Ordinary clock time remains unchanged for transport, software, law, aviation, and finance. Zero Hour exists alongside it as a human-centered schedule layer.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#127777;</span>
-      <h3>Smooth Seasonal Drift</h3>
-      <p>Instead of the abrupt one-hour shock of daylight saving time, Zero Hour drifts continuously with the seasons, following the Sun's natural motion.</p>
+      <h3 data-i18n="concept_drift_title">Smooth Seasonal Drift</h3>
+      <p data-i18n="concept_drift_desc">Instead of the abrupt one-hour shock of daylight saving time, Zero Hour drifts continuously with the seasons, following the Sun's natural motion.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#128197;</span>
-      <h3>Natural Scheduling</h3>
-      <p>Daily life can be expressed in Zero Time. "School starts at ZHT 1.5" means one and a half hours after sunrise. Shops open at ZHT 2. Intuitive and universal.</p>
+      <h3 data-i18n="concept_schedule_title">Natural Scheduling</h3>
+      <p data-i18n="concept_schedule_desc">Daily life can be expressed in Zero Time. "School starts at ZHT 1.5" means one and a half hours after sunrise. Shops open at ZHT 2. Intuitive and universal.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#128187;</span>
-      <h3>Zero Disruption</h3>
-      <p>No technical system needs rewriting. Zero Hour preserves civil time completely. It's additive, not a replacement — a second time scale for human routines.</p>
+      <h3 data-i18n="concept_disruption_title">Zero Disruption</h3>
+      <p data-i18n="concept_disruption_desc">No technical system needs rewriting. Zero Hour preserves civil time completely. It's additive, not a replacement — a second time scale for human routines.</p>
     </div>
     <div class="concept-card">
       <span class="icon">&#127758;</span>
-      <h3>Fully Predictable</h3>
-      <p>Zero Hour is computed from date, latitude, longitude, and a chosen dawn offset. It's deterministic for any location on Earth, for any date, past or future.</p>
+      <h3 data-i18n="concept_predictable_title">Fully Predictable</h3>
+      <p data-i18n="concept_predictable_desc">Zero Hour is computed from date, latitude, longitude, and a chosen dawn offset. It's deterministic for any location on Earth, for any date, past or future.</p>
+    </div>
+  </div>
+</section>
+
+<div class="sunrise-divider"></div>
+
+<!-- VS DST -->
+<section id="vs-dst">
+  <h2 data-i18n-html="dst_heading">Zero Hour <span class="accent">vs Daylight Saving</span></h2>
+  <p class="section-subtitle" data-i18n="dst_subtitle">Why continuous seasonal drift beats abrupt legislative clock changes.</p>
+
+  <div class="comparison-grid">
+    <div class="comparison-card negative">
+      <h3 data-i18n="dst_dst_title">Daylight Saving Time</h3>
+      <ul>
+        <li data-i18n="dst_dst_1">Abrupt one-hour jump twice a year</li>
+        <li data-i18n="dst_dst_2">Disrupts sleep schedules and circadian rhythms</li>
+        <li data-i18n="dst_dst_3">Causes measurable spikes in accidents and health events</li>
+        <li data-i18n="dst_dst_4">Legislative and politically contentious</li>
+        <li data-i18n="dst_dst_5">Disconnected from actual solar position</li>
+      </ul>
+    </div>
+    <div class="comparison-card positive">
+      <h3 data-i18n="dst_zh_title">Zero Hour</h3>
+      <ul>
+        <li data-i18n="dst_zh_1">Continuous, smooth seasonal adjustment</li>
+        <li data-i18n="dst_zh_2">Follows the Sun's natural motion</li>
+        <li data-i18n="dst_zh_3">No sudden shocks to biological rhythms</li>
+        <li data-i18n="dst_zh_4">Deterministic formula, not legislative policy</li>
+        <li data-i18n="dst_zh_5">Dawn-adjacent by definition</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -111,17 +142,17 @@
 
 <!-- HOW IT WORKS -->
 <section id="how-it-works">
-  <h2>How It <span class="accent">Works</span></h2>
-  <p class="section-subtitle">A mathematically clean definition anchored to local sunrise, with an optional offset for practical use.</p>
+  <h2 data-i18n-html="how_heading">How It <span class="accent">Works</span></h2>
+  <p class="section-subtitle" data-i18n="how_subtitle">A mathematically clean definition anchored to local sunrise, with an optional offset for practical use.</p>
 
   <div class="formula-block">
-    <h3>Core Definition</h3>
+    <h3 data-i18n="how_core_title">Core Definition</h3>
     <code>ZeroHourLocal(date, lat, lng) = LocalSunrise(date, lat, lng) + k</code>
-    <p>Where <strong>k</strong> is a chosen offset in minutes. k = 0 means zero hour is sunrise exactly. k = +20 means zero hour occurs 20 minutes after sunrise.</p>
+    <p data-i18n-html="how_core_desc">Where <strong>k</strong> is a chosen offset in minutes. k = 0 means zero hour is sunrise exactly. k = +20 means zero hour occurs 20 minutes after sunrise.</p>
   </div>
 
   <div class="formula-block">
-    <h3>Solar Calculation</h3>
+    <h3 data-i18n="how_solar_title">Solar Calculation</h3>
     <code>&gamma; = (2&pi; / 365) &times; (N &minus; 1 + (h &minus; 12) / 24)
 
 E = 229.18 &times; (0.000075 + 0.001868&middot;cos &gamma; &minus; 0.032077&middot;sin &gamma;
@@ -134,66 +165,38 @@ E = 229.18 &times; (0.000075 + 0.001868&middot;cos &gamma; &minus; 0.032077&midd
 cos H = cos(90.833&deg;) / (cos &phi; &middot; cos &delta;) &minus; tan &phi; &middot; tan &delta;
 
 Sunrise (UTC min) = 720 &minus; 4 &times; (&lambda; + H) &minus; E</code>
-    <p>N = day of year, h = approximate sunrise hour (6), &phi; = latitude, &delta; = solar declination, &lambda; = longitude (degrees east), E = equation of time (minutes), H = hour angle (degrees). This is the standard NOAA solar position model.</p>
+    <p data-i18n="how_solar_desc">N = day of year, h = approximate sunrise hour (6), &phi; = latitude, &delta; = solar declination, &lambda; = longitude (degrees east), E = equation of time (minutes), H = hour angle (degrees). This is the standard NOAA solar position model.</p>
   </div>
 
   <div class="formula-block">
-    <h3>Converting Civil Time to Zero Hour Time</h3>
+    <h3 data-i18n="how_convert_title">Converting Civil Time to Zero Hour Time</h3>
     <code>ZHT(t) = (t &minus; ZeroHourLocal) / 60
 
-ZHT₂₄(t) = ((t &minus; ZeroHourLocal) / 60) mod 24</code>
-    <p>Where t is current UTC time in minutes after midnight and ZeroHourLocal is sunrise UTC minutes + offset k. The result is hours in Zero Hour Time.</p>
+ZHT&#8324;&#8324;(t) = ((t &minus; ZeroHourLocal) / 60) mod 24</code>
+    <p data-i18n="how_convert_desc">Where t is current UTC time in minutes after midnight and ZeroHourLocal is sunrise UTC minutes + offset k. The result is hours in Zero Hour Time.</p>
   </div>
 </section>
 
 <div class="sunrise-divider"></div>
 
-<!-- VS DST -->
-<section id="vs-dst">
-  <h2>Zero Hour <span class="accent">vs Daylight Saving</span></h2>
-  <p class="section-subtitle">Why continuous seasonal drift beats abrupt legislative clock changes.</p>
-
-  <div class="comparison-grid">
-    <div class="comparison-card negative">
-      <h3>Daylight Saving Time</h3>
-      <ul>
-        <li>Abrupt one-hour jump twice a year</li>
-        <li>Disrupts sleep schedules and circadian rhythms</li>
-        <li>Causes measurable spikes in accidents and health events</li>
-        <li>Legislative and politically contentious</li>
-        <li>Disconnected from actual solar position</li>
-      </ul>
-    </div>
-    <div class="comparison-card positive">
-      <h3>Zero Hour</h3>
-      <ul>
-        <li>Continuous, smooth seasonal adjustment</li>
-        <li>Follows the Sun's natural motion</li>
-        <li>No sudden shocks to biological rhythms</li>
-        <li>Deterministic formula, not legislative policy</li>
-        <li>Dawn-adjacent by definition</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
 <!-- BOTTOM LINE -->
 <section id="bottom-line">
   <div class="formula-block" style="text-align: center; border-color: rgba(245, 158, 11, 0.3);">
-    <h3>The Bottom Line</h3>
+    <h3 data-i18n="bottom_title">The Bottom Line</h3>
     <div class="bottom-line-items">
-      <p>Zero Hour is mathematically feasible as a companion clock.</p>
-      <p>Zero Hour fixes the problem of waking up in the dark in the winter and needing alarm clocks.</p>
-      <p>Zero Hour preserves the precision of modern timekeeping while reintroducing a more natural sense of when the day begins.</p>
-      <p>Wake up naturally with the sun — not artificially with an alarm.</p>
+      <p data-i18n="bottom_1">Zero Hour is mathematically feasible as a companion clock.</p>
+      <p data-i18n="bottom_2">Zero Hour fixes the problem of waking up in the dark in the winter and needing alarm clocks.</p>
+      <p data-i18n="bottom_3">Zero Hour preserves the precision of modern timekeeping while reintroducing a more natural sense of when the day begins.</p>
+      <p data-i18n="bottom_4">Wake up naturally with the sun — not artificially with an alarm.</p>
     </div>
   </div>
 </section>
 
 <footer>
-  <p>Zero Hour Proposal &copy; 2026. A sunrise-anchored parallel time system.</p>
+  <p data-i18n="footer">Zero Hour Proposal &copy; 2026. A sunrise-anchored parallel time system.</p>
 </footer>
 
+<script src="i18n.js"></script>
 <script src="daynight-map.js"></script>
 <script src="calculator.js"></script>
 </body>

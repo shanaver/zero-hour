@@ -113,6 +113,9 @@ const DayNightMap = (() => {
     resize();
     initPills();
     window.addEventListener('resize', () => { resize(); render(); });
+    if (typeof I18n !== 'undefined') {
+      I18n.onLanguageChange(() => initPills());
+    }
 
     // Click on map dot to select city
     canvas.style.cursor = 'default';
@@ -200,7 +203,7 @@ const DayNightMap = (() => {
     CITIES.forEach((city, i) => {
       const pill = document.createElement('button');
       pill.className = 'city-pill' + (i === activeCity ? ' active' : '');
-      pill.textContent = city.name;
+      pill.textContent = city.isUser ? (typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name) : city.name;
       pill.addEventListener('click', () => setActiveCity(i));
       container.appendChild(pill);
     });

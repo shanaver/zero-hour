@@ -85,6 +85,74 @@ nav a:hover { color: var(--accent); }
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher {
+  position: relative;
+  margin-left: 0.75rem;
+}
+
+.lang-btn {
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.04em;
+}
+
+.lang-btn:hover {
+  color: var(--accent);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0;
+  min-width: 130px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.lang-dropdown.open {
+  display: block;
+}
+
+.lang-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-option:hover {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--text);
+}
+
+.lang-option.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ── HERO ── */
 .hero {
   min-height: 100vh;
