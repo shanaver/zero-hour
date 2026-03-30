@@ -82,15 +82,22 @@ const DayNightMap = (() => {
     };
   }
 
-  function lngToX(lng, w) { return ((lng + 180) / 360) * w; }
+  let centerLng = 0; // longitude at center of map, updated when user location is set
+
+  function lngToX(lng, w) {
+    // Offset so centerLng is at the middle of the canvas
+    let adjusted = lng - centerLng;
+    adjusted = ((adjusted % 360) + 540) % 360 - 180; // normalize to -180..180
+    return ((adjusted + 180) / 360) * w;
+  }
   function latToY(lat, h) { return ((90 - lat) / 180) * h; }
 
   let canvas, ctx, W, H;
   let userLat = null, userLng = null;
 
   // City markers for pills
-  // Ordered west to east by longitude
-  const CITIES = [
+  // Fixed city data — sorted west to east by longitude
+  const FIXED_CITIES = [
     { name: 'Honolulu', lat: 21.3069, lng: -157.8583 },
     { name: 'Anchorage', lat: 61.2181, lng: -149.9003 },
     { name: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
@@ -104,7 +111,6 @@ const DayNightMap = (() => {
     { name: 'Madrid', lat: 40.4168, lng: -3.7038 },
     { name: 'London', lat: 51.5074, lng: -0.1278 },
     { name: 'Paris', lat: 48.8566, lng: 2.3522 },
-    { name: 'My Location', lat: null, lng: null, isUser: true },
     { name: 'Berlin', lat: 52.52, lng: 13.405 },
     { name: 'Rome', lat: 41.9028, lng: 12.4964 },
     { name: 'Cairo', lat: 30.0444, lng: 31.2357 },
@@ -118,7 +124,39 @@ const DayNightMap = (() => {
     { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
   ];
 
-  let activeCity = CITIES.findIndex(c => c.isUser); // My Location
+  const MY_LOCATION = { name: 'My Location', lat: null, lng: null, isUser: true };
+
+  // CITIES is the display-ordered array, rebuilt when location changes
+  let CITIES = [...FIXED_CITIES];
+  CITIES.splice(Math.floor(FIXED_CITIES.length / 2), 0, MY_LOCATION);
+  let activeCity = CITIES.findIndex(c => c.isUser);
+
+  /**
+   * Rebuild the CITIES display order so My Location is at the center,
+   * with cities sorted by longitude wrapping around the globe.
+   */
+  function reorderCities() {
+    const uLng = userLng;
+    if (uLng === null) return;
+
+    // Sort fixed cities by longitude distance from user, going east
+    // This creates a circular ordering centered on the user's longitude
+    const sorted = [...FIXED_CITIES].sort((a, b) => {
+      // Normalize longitude relative to user: how far east is each city?
+      const da = ((a.lng - uLng) % 360 + 360) % 360;
+      const db = ((b.lng - uLng) % 360 + 360) % 360;
+      // Convert to -180..180 range so user is at 0
+      const ra = da > 180 ? da - 360 : da;
+      const rb = db > 180 ? db - 360 : db;
+      return ra - rb;
+    });
+
+    // Insert My Location in the middle (index 12 of 25 total)
+    const mid = Math.floor(sorted.length / 2);
+    CITIES = [...sorted];
+    CITIES.splice(mid, 0, MY_LOCATION);
+    activeCity = mid;
+  }
 
   function init(canvasEl) {
     canvas = canvasEl;
@@ -196,8 +234,11 @@ const DayNightMap = (() => {
   function setUserLocation(lat, lng) {
     userLat = lat;
     userLng = lng;
-    const userCity = CITIES.find(c => c.isUser);
-    if (userCity) { userCity.lat = lat; userCity.lng = lng; }
+    centerLng = lng;
+    MY_LOCATION.lat = lat;
+    MY_LOCATION.lng = lng;
+    reorderCities();
+    buildCityTable();
     scrollToActiveCity();
   }
 
@@ -422,36 +463,40 @@ const DayNightMap = (() => {
     // 2. Grid lines
     ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 0.5;
-    for (let lng = -150; lng <= 180; lng += 30) {
+    for (let lng = -180; lng <= 180; lng += 30) {
       const x = lngToX(lng, W);
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      if (x >= 0 && x <= W) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
     }
     for (let lat = -60; lat <= 60; lat += 30) {
       const y = latToY(lat, H);
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
     }
 
-    // 3. Draw land masses
+    // 3. Draw land masses (draw 3x shifted to handle wrap at edges)
     ctx.fillStyle = '#6b7280';
-    LAND.forEach(polygon => {
-      ctx.beginPath();
-      polygon.forEach(([lng, lat], i) => {
-        const x = lngToX(lng, W);
-        const y = latToY(lat, H);
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    [-360, 0, 360].forEach(offset => {
+      LAND.forEach(polygon => {
+        ctx.beginPath();
+        polygon.forEach(([lng, lat], i) => {
+          const x = lngToX(lng + offset, W);
+          const y = latToY(lat, H);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
       });
-      ctx.closePath();
-      ctx.fill();
     });
 
     // 4. Night overlay via pixel manipulation
     const imgData = ctx.getImageData(0, 0, W, H);
     const data = imgData.data;
 
-    // Precompute cos(deltaLng) per column
+    // Precompute cos(deltaLng) per column (accounting for map center offset)
     const cosDLng = new Float32Array(W);
     for (let px = 0; px < W; px++) {
-      const lng = (px / W) * 360 - 180;
+      const lng = (px / W) * 360 - 180 + centerLng;
       cosDLng[px] = Math.cos((lng - sub.lng) * DEG);
     }
 
