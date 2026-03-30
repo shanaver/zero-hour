@@ -85,6 +85,19 @@ nav a:hover { color: var(--accent); }
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
+/* ── RTL SUPPORT (Arabic) ── */
+[dir="rtl"] { direction: rtl; text-align: right; }
+[dir="rtl"] nav ul { direction: ltr; }
+[dir="rtl"] .lang-switcher { margin-left: 0; margin-right: 0.75rem; }
+[dir="rtl"] .lang-dropdown { right: auto; left: 0; }
+[dir="rtl"] .hero-clocks { direction: ltr; }
+[dir="rtl"] .hero-time { direction: ltr; }
+[dir="rtl"] .hero-sun-info { direction: ltr; }
+[dir="rtl"] .live-zt { direction: ltr; }
+[dir="rtl"] code { direction: ltr; text-align: left; }
+[dir="rtl"] .formula-block { text-align: right; }
+[dir="rtl"] .formula-block code { text-align: left; }
+
 /* ── LANGUAGE SWITCHER ── */
 .lang-switcher {
   position: relative;
