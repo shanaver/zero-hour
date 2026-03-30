@@ -298,6 +298,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function requestGeo() {
+    // Check for ?lat=&lng= URL params to override location
+    const params = new URLSearchParams(window.location.search);
+    const paramLat = parseFloat(params.get('lat'));
+    const paramLng = parseFloat(params.get('lng'));
+    if (!isNaN(paramLat) && !isNaN(paramLng)) {
+      setLocation(paramLat, paramLng);
+      return;
+    }
+
     if (!navigator.geolocation) {
       fallbackToIP();
       return;
