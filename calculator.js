@@ -284,11 +284,27 @@ document.addEventListener('DOMContentLoaded', () => {
     update();
   }
 
+  function fallbackToIP() {
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        if (data.latitude && data.longitude) {
+          setLocation(data.latitude, data.longitude);
+        } else {
+          setLocation(40.7128, -74.006); // Last resort: NYC
+        }
+      })
+      .catch(() => setLocation(40.7128, -74.006));
+  }
+
   function requestGeo() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      fallbackToIP();
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => setLocation(pos.coords.latitude, pos.coords.longitude),
-      () => setLocation(40.7128, -74.006) // Fallback to NYC
+      () => fallbackToIP() // Denied — try IP geolocation
     );
   }
 
