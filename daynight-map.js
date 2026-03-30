@@ -120,10 +120,10 @@ const DayNightMap = (() => {
     canvas = canvasEl;
     ctx = canvas.getContext('2d');
     resize();
-    initPills();
+    buildCityTable();
     window.addEventListener('resize', () => { resize(); render(); });
     if (typeof I18n !== 'undefined') {
-      I18n.onLanguageChange(() => initPills());
+      I18n.onLanguageChange(() => buildCityTable());
     }
 
     // Click on map dot to select city
@@ -197,24 +197,147 @@ const DayNightMap = (() => {
 
   function setActiveCity(index) {
     activeCity = index;
-    // Update pill UI
-    const pills = document.querySelectorAll('.city-pill');
-    pills.forEach((p, i) => {
-      p.classList.toggle('active', i === index);
-    });
+    updateCityTable();
     render();
   }
 
-  function initPills() {
-    const container = document.getElementById('city-pills');
-    if (!container) return;
-    container.innerHTML = '';
+  /**
+   * Determine day/night class for a city based on solar elevation.
+   * Returns 'city-day', 'city-twilight', or 'city-night'.
+   */
+  function getDayNightClass(date, lat, lng) {
+    const sub = subSolarPoint(date);
+    const sinSubLat = Math.sin(sub.lat * DEG);
+    const cosSubLat = Math.cos(sub.lat * DEG);
+    const sinLat = Math.sin(lat * DEG);
+    const cosLat = Math.cos(lat * DEG);
+    const dLng = (lng - sub.lng) * DEG;
+    const cosAngle = sinLat * sinSubLat + cosLat * cosSubLat * Math.cos(dLng);
+
+    if (cosAngle > 0.01) return 'city-day';
+    if (cosAngle > -0.01) return 'city-twilight';
+    return 'city-night';
+  }
+
+  /**
+   * Get civil time string for a city using its UTC offset approximation.
+   * We use longitude to approximate the local time (lng/15 = UTC offset hours).
+   */
+  function getCivilTimeForCity(date, lng) {
+    const utcH = date.getUTCHours();
+    const utcM = date.getUTCMinutes();
+    const utcS = date.getUTCSeconds();
+    const totalMin = utcH * 60 + utcM + utcS / 60 + (lng / 15) * 60;
+    const normalized = ((totalMin % 1440) + 1440) % 1440;
+    let h = Math.floor(normalized / 60);
+    const m = Math.floor(normalized % 60);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
+  }
+
+  function buildCityTable() {
+    const table = document.getElementById('city-table');
+    if (!table) return;
+    table.innerHTML = '';
+
+    const nameRow = document.createElement('tr');
+    nameRow.className = 'city-name-row';
+    const civilRow = document.createElement('tr');
+    civilRow.className = 'city-civil-row';
+    const zhtRow = document.createElement('tr');
+    zhtRow.className = 'city-zht-row';
+
     CITIES.forEach((city, i) => {
-      const pill = document.createElement('button');
-      pill.className = 'city-pill' + (i === activeCity ? ' active' : '');
-      pill.textContent = city.isUser ? (typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name) : city.name;
-      pill.addEventListener('click', () => setActiveCity(i));
-      container.appendChild(pill);
+      // Name cell
+      const nameTd = document.createElement('td');
+      nameTd.dataset.cityIndex = i;
+      const displayName = city.isUser ? (typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name) : city.name;
+      if (city.isUser) {
+        nameTd.textContent = displayName;
+      } else {
+        const link = document.createElement('a');
+        link.href = `https://www.google.com/maps/@${city.lat},${city.lng},10z`;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = displayName;
+        nameTd.appendChild(link);
+      }
+      nameTd.style.cursor = 'pointer';
+      nameTd.addEventListener('click', () => setActiveCity(i));
+      nameRow.appendChild(nameTd);
+
+      // Civil time cell
+      const civilTd = document.createElement('td');
+      civilTd.dataset.cityIndex = i;
+      civilTd.textContent = '--:--';
+      civilRow.appendChild(civilTd);
+
+      // ZHT cell
+      const zhtTd = document.createElement('td');
+      zhtTd.dataset.cityIndex = i;
+      zhtTd.textContent = 'ZHT --:--';
+      zhtRow.appendChild(zhtTd);
+    });
+
+    table.appendChild(nameRow);
+    table.appendChild(civilRow);
+    table.appendChild(zhtRow);
+
+    updateCityTable();
+  }
+
+  function updateCityTable() {
+    const table = document.getElementById('city-table');
+    if (!table) return;
+
+    const now = new Date();
+    const rows = table.querySelectorAll('tr');
+    if (rows.length < 3) return;
+
+    const nameCells = rows[0].querySelectorAll('td');
+    const civilCells = rows[1].querySelectorAll('td');
+    const zhtCells = rows[2].querySelectorAll('td');
+
+    CITIES.forEach((city, i) => {
+      const cLat = city.isUser ? userLat : city.lat;
+      const cLng = city.isUser ? userLng : city.lng;
+      const isActive = (i === activeCity);
+
+      // Day/night class
+      const dayClass = (cLat !== null && cLng !== null) ? getDayNightClass(now, cLat, cLng) : 'city-night';
+      const activeClass = isActive ? ' city-active' : '';
+
+      [nameCells[i], civilCells[i], zhtCells[i]].forEach(td => {
+        td.className = dayClass + activeClass;
+      });
+
+      // Civil time
+      if (cLat !== null && cLng !== null) {
+        civilCells[i].textContent = getCivilTimeForCity(now, cLng);
+      } else {
+        civilCells[i].textContent = '--:--';
+      }
+
+      // ZHT time
+      if (cLat !== null && cLng !== null) {
+        const zt = calcZTForLocation(now, cLat, cLng);
+        zhtCells[i].textContent = zt !== null ? formatZTShort(zt) : 'N/A';
+      } else {
+        zhtCells[i].textContent = 'ZHT --:--';
+      }
+
+      // Update "My Location" link if coords are now available
+      if (city.isUser && cLat !== null && cLng !== null && !nameCells[i].querySelector('a')) {
+        const displayName = typeof I18n !== 'undefined' ? I18n.t('my_location') : city.name;
+        nameCells[i].textContent = '';
+        const link = document.createElement('a');
+        link.href = `https://www.google.com/maps/@${cLat},${cLng},10z`;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = displayName;
+        nameCells[i].appendChild(link);
+      }
     });
   }
 
@@ -260,6 +383,7 @@ const DayNightMap = (() => {
 
   function render() {
     if (!ctx) return;
+    updateCityTable();
     const now = new Date();
     const sub = subSolarPoint(now);
     const sinSubLat = Math.sin(sub.lat * DEG);
@@ -416,5 +540,5 @@ const DayNightMap = (() => {
     ctx.stroke();
   }
 
-  return { init, render, setUserLocation, setActiveCity };
+  return { init, render, setUserLocation, setActiveCity, updateCityTable };
 })();
