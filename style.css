@@ -238,6 +238,13 @@ nav a:hover { color: var(--accent); }
   background-clip: text;
 }
 
+.pitch-tagline {
+  margin-top: 0.75rem;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* HERO CLOCKS */
 .hero-clocks {
   display: flex;
